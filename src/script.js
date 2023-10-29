@@ -29,7 +29,8 @@ pointsGeometry.setAttribute("position", new THREE.BufferAttribute(posArray, 3));
 // Materials
 
 const material = new THREE.PointsMaterial({
-  size: 0.005,
+  size: 0.009,
+  color: "red",
 });
 
 const particlesMaterial = new THREE.PointsMaterial({
@@ -123,8 +124,8 @@ const tick = () => {
 
   // Update objects
   sphere.rotation.y = 0.5 * elapsedTime;
-  particlesMesh.rotation.y = mouseY * elapsedTime * 0.00008;
-  particlesMesh.rotation.x = mouseX * elapsedTime * 0.00008;
+  particlesMesh.rotation.x = -mouseY * elapsedTime * 0.00008;
+  particlesMesh.rotation.y = -mouseX * elapsedTime * 0.00008;
   // Update Orbital Controls
   // controls.update()
 
