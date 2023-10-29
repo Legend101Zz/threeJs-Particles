@@ -12,35 +12,81 @@ const canvas = document.querySelector("canvas.webgl");
 // Scene
 const scene = new THREE.Scene();
 
-// Objects
-const geometry = new THREE.TorusGeometry(0.7, 0.2, 16, 100);
+//GALAXY
+// Create a buffer geometry for the particles
+const particlesGeometry = new THREE.BufferGeometry();
 
-const pointsGeometry = new THREE.BufferGeometry();
-const particlesCount = 5000;
+const particleCount = 100000;
+const positions = new Float32Array(particleCount * 3);
+const colors = new Float32Array(particleCount * 3);
 
-const posArray = new Float32Array(particlesCount * 3);
+const particleColor = new THREE.Color(0xffa500); // Fire color
 
-for (let i = 0; i < particlesCount * 3; i++) {
-  posArray[i] = (Math.random() - 0.5) * Math.random() * 5;
+const spiral = (t) => {
+  const r = t; // Radius increases linearly with time
+  const theta = 50 * t; // Angle increases linearly with time
+  const x = r * Math.cos(theta);
+  const y = r * Math.sin(theta);
+  const z = (Math.random() - 0.5) * 2;
+  return new THREE.Vector3(x, y, z);
+};
+
+for (let i = 0; i < particleCount; i++) {
+  const t = i / (particleCount - 1); // Linearly distribute points along the spiral
+  const point = spiral(t);
+
+  positions[i * 3] = point.x;
+  positions[i * 3 + 1] = point.y;
+  positions[i * 3 + 2] = point.z;
+
+  colors[i * 3] = particleColor.r;
+  colors[i * 3 + 1] = particleColor.g;
+  colors[i * 3 + 2] = particleColor.b;
 }
 
-pointsGeometry.setAttribute("position", new THREE.BufferAttribute(posArray, 3));
+particlesGeometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(positions, 3)
+);
+particlesGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
-// Materials
-
-const material = new THREE.PointsMaterial({
-  size: 0.009,
-  color: "red",
-});
-
-const particlesMaterial = new THREE.PointsMaterial({
+const particlesMaterial2 = new THREE.PointsMaterial({
   size: 0.005,
+  vertexColors: THREE.VertexColors,
 });
 
-// Mesh
-const sphere = new THREE.Points(geometry, material);
-const particlesMesh = new THREE.Points(pointsGeometry, particlesMaterial);
-scene.add(sphere, particlesMesh);
+const particles = new THREE.Points(particlesGeometry, particlesMaterial2);
+scene.add(particles);
+
+// Objects
+// const geometry = new THREE.TorusGeometry(0.7, 0.2, 16, 100);
+
+// const pointsGeometry = new THREE.BufferGeometry();
+// const particlesCount = 5000;
+
+// const posArray = new Float32Array(particlesCount * 3);
+
+// for (let i = 0; i < particlesCount * 3; i++) {
+//   posArray[i] = (Math.random() - 0.5) * Math.random() * 5;
+// }
+
+// pointsGeometry.setAttribute("position", new THREE.BufferAttribute(posArray, 3));
+
+// // Materials
+
+// const material = new THREE.PointsMaterial({
+//   size: 0.009,
+//   color: "red",
+// });
+
+// const particlesMaterial = new THREE.PointsMaterial({
+//   size: 0.005,
+// });
+
+// // Mesh
+// const sphere = new THREE.Points(geometry, material);
+// const particlesMesh = new THREE.Points(pointsGeometry, particlesMaterial);
+//scene.add(sphere, particlesMesh);
 
 // Lights
 
@@ -123,9 +169,11 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Update objects
-  sphere.rotation.y = 0.5 * elapsedTime;
-  particlesMesh.rotation.x = -mouseY * elapsedTime * 0.00008;
-  particlesMesh.rotation.y = -mouseX * elapsedTime * 0.00008;
+  //   sphere.rotation.y = 0.5 * elapsedTime;
+  //   particlesMesh.rotation.x = -mouseY * elapsedTime * 0.00008;
+  //   particlesMesh.rotation.y = -mouseX * elapsedTime * 0.00008;
+
+  particles.rotation.z += -mouseY * elapsedTime * 0.00008; // Rotate the galaxy
   // Update Orbital Controls
   // controls.update()
 
