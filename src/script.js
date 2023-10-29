@@ -34,8 +34,6 @@ const material = new THREE.PointsMaterial({
 
 const particlesMaterial = new THREE.PointsMaterial({
   size: 0.005,
-  transparent: true,
-  color: 0xff0000,
 });
 
 // Mesh
@@ -100,6 +98,19 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(new THREE.Color("#21282a"), 1);
+
+//mouse
+
+function animateParticles(event) {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+}
+
+document.addEventListener("mousemove", animateParticles);
+
+let mouseX = 0;
+let mouseY = 0;
 
 /**
  * Animate
@@ -112,7 +123,8 @@ const tick = () => {
 
   // Update objects
   sphere.rotation.y = 0.5 * elapsedTime;
-
+  particlesMesh.rotation.y = mouseY * elapsedTime * 0.00008;
+  particlesMesh.rotation.x = mouseX * elapsedTime * 0.00008;
   // Update Orbital Controls
   // controls.update()
 
